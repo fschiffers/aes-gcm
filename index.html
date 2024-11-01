@@ -32,7 +32,7 @@
         <div class="col">
             <label for="iterations-input" class="form-label">Iterations</label>
             <input type="password" autocomplete="off" class="form-control" id="iterations-input" min="1000"
-                   placeholder="Minumum 1,000">
+                   placeholder="Minimum 1,000">
         </div>
     </div>
     <div class="mb-3">
@@ -63,6 +63,38 @@
 </div>
 
 <script src="js/app.js"></script>
+<script>
+    // Seeded pseudorandom number generator (PRNG) for deterministic outputs
+    function seededRandom(seed) {
+        let x = Math.sin(seed++) * 10000;
+        return x - Math.floor(x);
+    }
+
+    // Generate a deterministic random hex string based on seed
+    function generateDeterministicHex(length, seed) {
+        let hexString = '';
+        for (let i = 0; i < length / 2; i++) {
+            const randomValue = Math.floor(seededRandom(seed) * 256);
+            hexString += ('0' + randomValue.toString(16)).slice(-2);
+            seed += 1; // Increment seed for next value
+        }
+        return hexString;
+    }
+
+    // Prefill key, salt, and iterations with deterministic values based on a seed
+    window.onload = function () {
+        const seed = 12345;  // Replace this with any integer for different deterministic outputs
+
+        // Set the deterministic key as the default value
+        document.getElementById('key-input').value = generateDeterministicHex(64, seed);
+
+        // Set the deterministic 12-character salt
+        document.getElementById('iv-input').value = generateDeterministicHex(12, seed + 100); // Offset to get different values
+
+        // Set a deterministic iteration count between 1000 and 5000
+        document.getElementById('iterations-input').value = 1000 + Math.floor(seededRandom(seed + 200) * 4000);
+    };
+</script>
 <div class="container mt-4">
     <p class="text-center text-muted small">
         This script runs entirely on the client side, and no data is stored on the server. Please note that GitHub Pages
@@ -74,7 +106,3 @@
 </div>
 </body>
 </html>
-
-
-
-
